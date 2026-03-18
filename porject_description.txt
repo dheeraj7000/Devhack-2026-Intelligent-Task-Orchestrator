@@ -1,0 +1,432 @@
+📄 SOFTWARE REQUIREMENTS DOCUMENT
+Project: Intelligent Task Orchestration MVP (SPOQ-inspired)
+1. Overview
+1.1 Objective
+
+Build a live MVP system that demonstrates intelligent orchestration of software tasks using LLMs, inspired by SPOQ:
+
+Convert human requirements → structured Epic
+
+Validate planning quality using metrics
+
+Generate DAG of atomic tasks
+
+Assign tasks to specialized roles
+
+Compute execution waves for parallelism
+
+This directly demonstrates:
+
+Planning + Validation Gate
+
+DAG-based orchestration
+
+Wave-based execution
+
+1.2 Scope
+
+This MVP will include:
+
+✔ Requirement → Epic generation
+✔ Epic validation (LLM scoring system)
+✔ Human approval loop
+✔ DAG generation
+✔ Task-role assignment
+✔ Wave computation
+✔ Visualization (optional but recommended)
+
+❌ No actual code execution agents (can be mocked)
+
+2. System Architecture
+2.1 High-Level Components
+Frontend (UI Dashboard)
+        |
+Backend Orchestrator API
+        |
+-------------------------------------
+| LLM Service (NVIDIA NIM API)      |
+| Planning Validator Agent          |
+| Task Assignment Agent            |
+-------------------------------------
+        |
+Graph Engine (DAG + Wave Builder)
+        |
+Database (Epics, Tasks, Scores)
+2.2 Core Modules
+1. Requirement Ingestion Module
+
+Input: Natural language project description
+
+Output: Raw structured prompt for LLM
+
+2. Epic Generation Module (LLM)
+
+Uses NVIDIA NIM API to generate:
+
+Epic {
+  goal: string
+  tasks: Task[]
+  dependencies: list of (task_id → task_id)
+  success_criteria: string[]
+}
+3. Planning Validation Agent
+
+Implements 10-metric scoring system (from SPOQ):
+
+Vision Clarity
+
+Architecture Quality
+
+Task Decomposition
+
+Dependency Graph
+
+Coverage Completeness
+
+Phase Ordering
+
+Scope Coherence
+
+Success Criteria Quality
+
+Risk Identification
+
+Integration Strategy
+
+Rules:
+
+PASS if:
+avg >= 95 AND each metric >= 90
+
+Else:
+→ trigger Replanning loop
+
+4. Human Validation Module (HaaA)
+
+Displays generated epic
+
+Allows:
+
+Approve
+
+Reject + feedback
+
+This implements Human-as-Agent paradigm
+
+5. DAG Builder
+
+Input:
+
+Tasks + dependencies
+
+Output:
+
+Directed Acyclic Graph
+
+Validation:
+
+Must detect cycles
+
+Must ensure valid dependencies
+
+6. Task Assignment Agent (LLM)
+
+Assign tasks to roles:
+
+Roles
+
+UI/UX Engineer
+
+Frontend Engineer
+
+Backend Engineer
+
+Data Engineer
+
+DevOps Engineer
+
+ML Engineer
+
+Test Engineer
+
+Logic:
+
+Based on task description + keywords
+
+LLM classification
+
+Output:
+
+task_id → role
+7. Wave Computation Engine
+
+Implements:
+
+👉 Topological Sorting
+👉 Wave grouping
+
+Definition:
+
+Wave = tasks with no interdependencies
+
+Output:
+
+Wave 0: [t1, t2]
+Wave 1: [t3]
+Wave 2: [t4, t5]
+
+This is the core SPOQ innovation
+
+3. Functional Requirements
+FR1: Requirement Input
+
+User inputs project description
+
+System stores project
+
+FR2: Epic Generation
+
+System calls LLM
+
+Generates:
+
+Goal
+
+Tasks
+
+Dependencies
+
+Success Criteria
+
+FR3: Planning Validation
+
+System evaluates epic using LLM
+
+Returns:
+
+{
+  scores: {
+    vision_clarity: 92,
+    ...
+  },
+  average: 94,
+  status: FAIL
+}
+FR4: Replanning Loop
+
+IF validation fails:
+→ LLM regenerates improved epic using feedback
+
+Loop until:
+
+Pass OR max retries (3)
+
+FR5: Human Validation
+
+UI displays epic
+
+User can:
+
+Approve
+
+Reject with feedback
+
+FR6: DAG Generation
+
+Build graph from dependencies
+
+Validate:
+
+No cycles
+
+All tasks connected
+
+FR7: Task Assignment
+
+Assign role per task
+
+Use LLM classification
+
+FR8: Wave Computation
+
+Compute execution waves
+
+Output ordered waves
+
+FR9: Visualization (Optional but HIGHLY recommended)
+
+Graph view (DAG)
+
+Wave grouping
+
+Role assignment color-coded
+
+4. Non-Functional Requirements
+Performance
+
+Epic generation < 5 seconds
+
+Validation < 3 seconds
+
+Scalability
+
+Handle up to 100 tasks per epic
+
+Reliability
+
+Retry logic for LLM calls
+
+Graceful fallback
+
+Usability
+
+Clean UI for hackathon demo
+
+Visual DAG is key differentiator
+
+5. Data Models
+Epic
+{
+  "id": "epic_001",
+  "goal": "...",
+  "tasks": [...],
+  "dependencies": [...],
+  "success_criteria": [...],
+  "status": "validated"
+}
+Task
+{
+  "id": "task_01",
+  "description": "...",
+  "dependencies": ["task_00"],
+  "role": "Backend Engineer",
+  "wave": 1
+}
+Validation
+{
+  "metrics": {
+    "vision_clarity": 95,
+    ...
+  },
+  "average": 96,
+  "passed": true
+}
+6. API Design
+POST /generate-epic
+
+Input:
+
+{ "requirement": "Build a chat app..." }
+
+Output:
+
+Epic JSON
+POST /validate-epic
+
+Output:
+
+Validation JSON
+POST /assign-tasks
+
+Output:
+
+task_id → role
+POST /compute-waves
+
+Output:
+
+waves: [[t1,t2], [t3], [t4,t5]]
+7. LLM Prompt Design
+Epic Generation Prompt
+You are a software architect.
+
+Generate an EPIC with:
+1. Goal
+2. Atomic tasks (1–4h each)
+3. Dependencies (DAG)
+4. Success criteria
+
+Ensure:
+- No circular dependencies
+- Tasks are atomic
+- Clear structure (JSON)
+Validation Prompt
+Evaluate the EPIC using 10 metrics.
+
+Return:
+- Score (0–100) per metric
+- Average score
+- Pass/Fail
+
+Strict thresholds:
+avg >= 95
+each >= 90
+Task Assignment Prompt
+Assign each task to one role:
+
+Roles:
+UI/UX, Frontend, Backend, Data, DevOps, ML, Test
+
+Return mapping.
+8. Tech Stack (Recommended)
+Backend
+
+FastAPI / Node.js (Express)
+
+Python preferred for graph logic
+
+Frontend
+
+React + Tailwind
+
+Graph visualization:
+
+React Flow (BEST)
+
+D3.js
+
+LLM
+
+NVIDIA NIM API
+
+Graph Engine
+
+networkx (Python)
+
+Storage
+
+SQLite / Supabase
+
+9. Demo Flow (IMPORTANT)
+
+For hackathon:
+
+User enters idea
+
+Epic auto-generated
+
+Validation score shown (FAIL → auto fix → PASS)
+
+Human clicks "Approve"
+
+DAG visual appears
+
+Tasks assigned to roles
+
+Waves displayed
+
+Highlight parallel execution
+
+🔥 This storytelling wins hackathons.
+
+10. Key Innovation Mapping to SPOQ
+
+Your MVP demonstrates:
+
+SPOQ Concept	Your MVP
+Epic	Generated plan
+DAG	Dependency graph
+Waves	Parallel execution groups
+Validation Gate	LLM scoring
+HaaA	Human approval
+Orchestration	Full pipeline
