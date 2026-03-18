@@ -553,9 +553,52 @@ async def enrich_tasks(epic_id: str, db: Session = Depends(get_db)):
     return EpicResponse(epic=epic_schema, validation=None, validation_history=history)
 
 
+MAX_TASKS_PER_ENGINEER = 4
+
+
+def _balance_role_assignments(assignment_map: dict) -> dict:
+    """
+    Load-balance role assignments so no single engineer gets more than
+    MAX_TASKS_PER_ENGINEER tasks. If a role has more, split into numbered
+    engineers (e.g. "Backend Engineer 1", "Backend Engineer 2").
+
+    Args:
+        assignment_map: dict of task_id -> base role name
+
+    Returns:
+        dict of task_id -> balanced role name (with numbers if split)
+    """
+    # Group task IDs by base role
+    role_tasks: dict[str, list[str]] = {}
+    for task_id, role in assignment_map.items():
+        role_tasks.setdefault(role, []).append(task_id)
+
+    balanced_map = {}
+    for role, task_ids in role_tasks.items():
+        if len(task_ids) <= MAX_TASKS_PER_ENGINEER:
+            # Fits in one engineer — no numbering needed
+            for tid in task_ids:
+                balanced_map[tid] = role
+        else:
+            # Split into chunks of MAX_TASKS_PER_ENGINEER
+            engineer_num = 1
+            for i in range(0, len(task_ids), MAX_TASKS_PER_ENGINEER):
+                chunk = task_ids[i : i + MAX_TASKS_PER_ENGINEER]
+                numbered_role = f"{role} {engineer_num}"
+                for tid in chunk:
+                    balanced_map[tid] = numbered_role
+                engineer_num += 1
+
+    return balanced_map
+
+
 @router.post("/assign-tasks/{epic_id}", response_model=list[TaskAssignment])
 async def assign_tasks(epic_id: str, db: Session = Depends(get_db)):
-    """Assign roles to each task in an epic using the LLM."""
+    """
+    Assign roles to each task in an epic using the LLM.
+    Then load-balance: if any role has more than 4 tasks,
+    split into numbered engineers (e.g. Backend Engineer 1, Backend Engineer 2).
+    """
     epic_model = db.query(EpicModel).filter(EpicModel.id == epic_id).first()
     if not epic_model:
         raise HTTPException(status_code=404, detail="Epic not found")
@@ -566,27 +609,32 @@ async def assign_tasks(epic_id: str, db: Session = Depends(get_db)):
 
     assignments = await llm_service.assign_tasks(tasks)
 
-    # Build a lookup from task_id -> role
-    assignment_map = {}
+    # Build a lookup from task_id -> base role
+    raw_map = {}
     for assignment in assignments:
         task_id = assignment.get("task_id", "")
         role = assignment.get("role", "")
-        assignment_map[task_id] = role
+        if task_id:
+            raw_map[task_id] = role
 
-    # Update tasks with assigned roles
+    # Load-balance: split overloaded roles into numbered engineers
+    balanced_map = _balance_role_assignments(raw_map)
+
+    # Update tasks with balanced roles
     updated_tasks = []
     for task in tasks:
         task_copy = dict(task)
-        if task_copy.get("id") in assignment_map:
-            task_copy["role"] = assignment_map[task_copy["id"]]
+        tid = task_copy.get("id", "")
+        if tid in balanced_map:
+            task_copy["role"] = balanced_map[tid]
         updated_tasks.append(task_copy)
 
     epic_model.tasks = updated_tasks
     db.commit()
 
     return [
-        TaskAssignment(task_id=a.get("task_id", ""), role=a.get("role", ""))
-        for a in assignments
+        TaskAssignment(task_id=tid, role=role)
+        for tid, role in balanced_map.items()
     ]
 
 

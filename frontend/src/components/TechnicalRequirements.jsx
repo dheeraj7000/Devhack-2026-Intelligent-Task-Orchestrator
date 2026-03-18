@@ -12,6 +12,8 @@ import {
   ChevronUp,
 } from 'lucide-react';
 
+const fontFamily = "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif";
+
 export default function TechnicalRequirements({ epicData, onProceed, loading }) {
   const [expandedTask, setExpandedTask] = useState(null);
 
@@ -35,19 +37,33 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
   };
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 className="text-3xl font-semibold tracking-tight text-[#f5f5f7]">Technical Requirements</h2>
-          <p className="text-[#86868b] text-sm mt-2">
+          <h2 style={{ fontFamily, fontSize: '34px', fontWeight: 700, letterSpacing: '-0.025em', color: '#111', margin: 0 }}>Technical Requirements</h2>
+          <p style={{ fontFamily, color: '#555', fontSize: '20px', marginTop: '8px' }}>
             Implementation details and tech stack per task
           </p>
         </div>
         <button
           onClick={onProceed}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-[#1c1c1e] disabled:text-[#86868b] text-white font-medium rounded-full transition-all duration-300"
+          style={{
+            fontFamily,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '12px 24px',
+            backgroundColor: loading ? '#e5e5e5' : '#c8ff00',
+            color: loading ? '#555' : '#111',
+            fontWeight: 500,
+            borderRadius: '9999px',
+            border: 'none',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            transition: 'all 0.3s',
+            fontSize: '20px',
+          }}
         >
           {loading ? (
             <>
@@ -63,54 +79,81 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
         </button>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards - DARK */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="glass rounded-2xl p-6">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2.5 bg-[#0071e3]/10 rounded-xl">
-              <FileCode2 className="w-5 h-5 text-[#0071e3]" />
+        <div style={{
+          backgroundColor: '#1a1a2e',
+          borderRadius: '16px',
+          padding: '24px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ padding: '10px', backgroundColor: 'rgba(200,255,0,0.15)', borderRadius: '12px' }}>
+              <FileCode2 style={{ width: '20px', height: '20px', color: '#c8ff00' }} />
             </div>
-            <span className="text-sm text-[#86868b]">Tasks Enriched</span>
+            <span style={{ fontFamily, fontSize: '20px', color: 'rgba(255,255,255,0.7)' }}>Tasks Enriched</span>
           </div>
-          <p className="text-3xl font-bold tracking-tight text-[#f5f5f7]">
+          <p style={{ fontFamily, fontSize: '34px', fontWeight: 700, letterSpacing: '-0.025em', color: '#ffffff', margin: 0 }}>
             {enrichedCount}
-            <span className="text-base text-[#86868b] font-normal ml-1.5">/ {tasks.length}</span>
+            <span style={{ fontFamily, fontSize: '20px', color: 'rgba(255,255,255,0.7)', fontWeight: 400, marginLeft: '6px' }}>/ {tasks.length}</span>
           </p>
         </div>
 
-        <div className="glass rounded-2xl p-6">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2.5 bg-[#ff9f0a]/10 rounded-xl">
-              <Clock className="w-5 h-5 text-[#ff9f0a]" />
+        <div style={{
+          backgroundColor: '#1a1a2e',
+          borderRadius: '16px',
+          padding: '24px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ padding: '10px', backgroundColor: 'rgba(200,255,0,0.15)', borderRadius: '12px' }}>
+              <Clock style={{ width: '20px', height: '20px', color: '#c8ff00' }} />
             </div>
-            <span className="text-sm text-[#86868b]">Total Estimated</span>
+            <span style={{ fontFamily, fontSize: '20px', color: 'rgba(255,255,255,0.7)' }}>Total Estimated</span>
           </div>
-          <p className="text-3xl font-bold tracking-tight text-[#f5f5f7]">
+          <p style={{ fontFamily, fontSize: '34px', fontWeight: 700, letterSpacing: '-0.025em', color: '#ffffff', margin: 0 }}>
             {totalHours.toFixed(1)}
-            <span className="text-base text-[#86868b] font-normal ml-1.5">hours</span>
+            <span style={{ fontFamily, fontSize: '20px', color: 'rgba(255,255,255,0.7)', fontWeight: 400, marginLeft: '6px' }}>hours</span>
           </p>
         </div>
 
-        <div className="glass rounded-2xl p-6">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2.5 bg-[#bf5af2]/10 rounded-xl">
-              <Code2 className="w-5 h-5 text-[#bf5af2]" />
+        <div style={{
+          backgroundColor: '#1a1a2e',
+          borderRadius: '16px',
+          padding: '24px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ padding: '10px', backgroundColor: 'rgba(200,255,0,0.15)', borderRadius: '12px' }}>
+              <Code2 style={{ width: '20px', height: '20px', color: '#c8ff00' }} />
             </div>
-            <span className="text-sm text-[#86868b]">Technologies</span>
+            <span style={{ fontFamily, fontSize: '20px', color: 'rgba(255,255,255,0.7)' }}>Technologies</span>
           </div>
-          <p className="text-3xl font-bold tracking-tight text-[#f5f5f7]">{allTech.size}</p>
+          <p style={{ fontFamily, fontSize: '34px', fontWeight: 700, letterSpacing: '-0.025em', color: '#ffffff', margin: 0 }}>{allTech.size}</p>
         </div>
       </div>
 
       {/* Tech Stack Overview */}
       {allTech.size > 0 && (
-        <div className="glass rounded-2xl p-6">
-          <h3 className="text-xs font-medium text-[#86868b] uppercase tracking-wider mb-4">Tech Stack Overview</h3>
-          <div className="flex flex-wrap gap-2">
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '16px',
+          padding: '24px',
+          border: '1px solid #e5e5e5',
+        }}>
+          <h3 style={{ fontFamily, fontSize: '20px', fontWeight: 500, color: '#555', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>Tech Stack Overview</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {[...allTech].sort().map((tech) => (
               <span
                 key={tech}
-                className="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#0071e3]/10 text-[#409cff] border border-[#0071e3]/15"
+                style={{
+                  fontFamily,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '6px 14px',
+                  borderRadius: '9999px',
+                  fontSize: '20px',
+                  fontWeight: 500,
+                  backgroundColor: '#c8ff00',
+                  color: '#111',
+                }}
               >
                 {tech}
               </span>
@@ -120,7 +163,7 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
       )}
 
       {/* Task Details */}
-      <div className="space-y-3">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {tasks.map((task, idx) => {
           const td = task.technical_details;
           const isExpanded = expandedTask === task.id;
@@ -128,66 +171,103 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
           return (
             <div
               key={task.id || idx}
-              className="glass rounded-2xl overflow-hidden transition-all duration-300 hover:bg-white/[0.04]"
+              style={{
+                backgroundColor: '#ffffff',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                transition: 'all 0.3s',
+                border: '1px solid #e5e5e5',
+              }}
             >
               {/* Task Header (always visible) */}
               <button
                 onClick={() => toggleTask(task.id)}
-                className="w-full flex items-center justify-between p-6 text-left"
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '24px',
+                  textAlign: 'left',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(200,255,0,0.04)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#0071e3]/10 text-[#409cff] border border-[#0071e3]/15 flex-shrink-0">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                  <span style={{
+                    fontFamily,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    fontSize: '20px',
+                    fontWeight: 500,
+                    backgroundColor: '#c8ff00',
+                    color: '#111',
+                    flexShrink: 0,
+                  }}>
                     {task.id}
                   </span>
-                  <p className="text-sm text-[#f5f5f7] truncate">
+                  <p style={{ fontFamily, fontSize: '20px', color: '#111', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {task.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-3">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, marginLeft: '12px' }}>
                   {td?.estimated_hours && (
-                    <span className="text-xs text-[#86868b]">
+                    <span style={{ fontFamily, fontSize: '20px', color: '#555' }}>
                       {td.estimated_hours}h
                     </span>
                   )}
                   {td?.tech_stack?.length > 0 && (
-                    <div className="hidden sm:flex items-center gap-1.5">
+                    <div className="hidden sm:flex" style={{ alignItems: 'center', gap: '6px' }}>
                       {td.tech_stack.slice(0, 3).map((tech) => (
                         <span
                           key={tech}
-                          className="text-xs px-2.5 py-0.5 bg-white/[0.05] text-[#86868b] rounded-full"
+                          style={{
+                            fontFamily,
+                            fontSize: '20px',
+                            padding: '2px 10px',
+                            backgroundColor: 'rgba(200,255,0,0.15)',
+                            color: '#111',
+                            borderRadius: '9999px',
+                          }}
                         >
                           {tech}
                         </span>
                       ))}
                       {td.tech_stack.length > 3 && (
-                        <span className="text-xs text-[#86868b]">
+                        <span style={{ fontFamily, fontSize: '20px', color: '#555' }}>
                           +{td.tech_stack.length - 3}
                         </span>
                       )}
                     </div>
                   )}
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-[#86868b]" />
+                    <ChevronUp style={{ width: '16px', height: '16px', color: '#555' }} />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-[#86868b]" />
+                    <ChevronDown style={{ width: '16px', height: '16px', color: '#555' }} />
                   )}
                 </div>
               </button>
 
               {/* Expanded Details */}
               {isExpanded && td && (
-                <div className="px-6 pb-6 pt-0 border-t border-white/[0.06] animate-fade-in">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                <div style={{ padding: '0 24px 24px 24px', borderTop: '1px solid #e5e5e5' }} className="animate-fade-in">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ marginTop: '20px' }}>
                     {/* Approach */}
                     {td.approach && (
                       <div className="md:col-span-2">
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <Wrench className="w-3.5 h-3.5 text-[#30d158]" />
-                          <span className="text-xs font-medium text-[#30d158] uppercase tracking-wider">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                          <Wrench style={{ width: '14px', height: '14px', color: '#22c55e' }} />
+                          <span style={{ fontFamily, fontSize: '20px', fontWeight: 500, color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Approach
                           </span>
                         </div>
-                        <p className="text-sm text-[#f5f5f7]/80 leading-relaxed">
+                        <p style={{ fontFamily, fontSize: '20px', color: 'rgba(17,17,17,0.8)', lineHeight: 1.6, margin: 0 }}>
                           {td.approach}
                         </p>
                       </div>
@@ -196,17 +276,24 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
                     {/* Tech Stack */}
                     {td.tech_stack?.length > 0 && (
                       <div>
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <Code2 className="w-3.5 h-3.5 text-[#bf5af2]" />
-                          <span className="text-xs font-medium text-[#bf5af2] uppercase tracking-wider">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                          <Code2 style={{ width: '14px', height: '14px', color: '#8b5cf6' }} />
+                          <span style={{ fontFamily, fontSize: '20px', fontWeight: 500, color: '#8b5cf6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Tech Stack
                           </span>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                           {td.tech_stack.map((tech) => (
                             <span
                               key={tech}
-                              className="text-xs px-2.5 py-1 bg-[#bf5af2]/10 text-[#bf5af2] rounded-full border border-[#bf5af2]/15"
+                              style={{
+                                fontFamily,
+                                fontSize: '20px',
+                                padding: '4px 10px',
+                                backgroundColor: '#c8ff00',
+                                color: '#111',
+                                borderRadius: '9999px',
+                              }}
                             >
                               {tech}
                             </span>
@@ -218,13 +305,13 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
                     {/* Estimated Hours */}
                     {td.estimated_hours && (
                       <div>
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <Clock className="w-3.5 h-3.5 text-[#ff9f0a]" />
-                          <span className="text-xs font-medium text-[#ff9f0a] uppercase tracking-wider">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                          <Clock style={{ width: '14px', height: '14px', color: '#f59e0b' }} />
+                          <span style={{ fontFamily, fontSize: '20px', fontWeight: 500, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Estimate
                           </span>
                         </div>
-                        <p className="text-sm text-[#f5f5f7]/80">
+                        <p style={{ fontFamily, fontSize: '20px', color: 'rgba(17,17,17,0.8)', margin: 0 }}>
                           {td.estimated_hours} hour{td.estimated_hours !== 1 ? 's' : ''}
                         </p>
                       </div>
@@ -233,17 +320,17 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
                     {/* Inputs */}
                     {td.inputs?.length > 0 && (
                       <div>
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <ArrowDownToLine className="w-3.5 h-3.5 text-[#0071e3]" />
-                          <span className="text-xs font-medium text-[#0071e3] uppercase tracking-wider">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                          <ArrowDownToLine style={{ width: '14px', height: '14px', color: '#3b82f6' }} />
+                          <span style={{ fontFamily, fontSize: '20px', fontWeight: 500, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Inputs
                           </span>
                         </div>
-                        <ul className="space-y-1.5">
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           {td.inputs.map((input, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span className="text-[#86868b] mt-0.5 text-xs">&#8226;</span>
-                              <span className="text-sm text-[#f5f5f7]/80">{input}</span>
+                            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                              <span style={{ color: '#555', marginTop: '2px', fontSize: '20px' }}>&#8226;</span>
+                              <span style={{ fontFamily, fontSize: '20px', color: 'rgba(17,17,17,0.8)' }}>{input}</span>
                             </li>
                           ))}
                         </ul>
@@ -253,17 +340,17 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
                     {/* Outputs */}
                     {td.outputs?.length > 0 && (
                       <div>
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <ArrowUpFromLine className="w-3.5 h-3.5 text-[#30d158]" />
-                          <span className="text-xs font-medium text-[#30d158] uppercase tracking-wider">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                          <ArrowUpFromLine style={{ width: '14px', height: '14px', color: '#22c55e' }} />
+                          <span style={{ fontFamily, fontSize: '20px', fontWeight: 500, color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Outputs
                           </span>
                         </div>
-                        <ul className="space-y-1.5">
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           {td.outputs.map((output, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span className="text-[#86868b] mt-0.5 text-xs">&#8226;</span>
-                              <span className="text-sm text-[#f5f5f7]/80">{output}</span>
+                            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                              <span style={{ color: '#555', marginTop: '2px', fontSize: '20px' }}>&#8226;</span>
+                              <span style={{ fontFamily, fontSize: '20px', color: 'rgba(17,17,17,0.8)' }}>{output}</span>
                             </li>
                           ))}
                         </ul>
@@ -275,8 +362,8 @@ export default function TechnicalRequirements({ epicData, onProceed, loading }) 
 
               {/* No tech details fallback */}
               {isExpanded && !td && (
-                <div className="px-6 pb-6 pt-0 border-t border-white/[0.06]">
-                  <p className="text-sm text-[#86868b] mt-4 italic">
+                <div style={{ padding: '0 24px 24px 24px', borderTop: '1px solid #e5e5e5' }}>
+                  <p style={{ fontFamily, fontSize: '20px', color: '#555', marginTop: '16px', fontStyle: 'italic' }}>
                     No technical details generated for this task.
                   </p>
                 </div>

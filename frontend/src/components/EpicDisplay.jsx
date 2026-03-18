@@ -21,26 +21,38 @@ export default function EpicDisplay({ epicData, onValidate, loading }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight" style={{ color: '#f5f5f7' }}>
+          <h2
+            className="text-5xl font-bold tracking-tight"
+            style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#111111', fontWeight: 700 }}
+          >
             Generated Epic
           </h2>
-          <p className="text-sm mt-1.5" style={{ color: '#86868b' }}>
+          <p className="text-sm mt-1.5" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#555555', fontWeight: 400 }}>
             Review the AI-generated task breakdown
           </p>
         </div>
         <button
           onClick={onValidate}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-7 py-3 text-white font-medium rounded-full transition-all duration-200 disabled:opacity-40"
+          className="inline-flex items-center gap-2 px-7 py-3 font-bold transition-all duration-200 disabled:opacity-40"
           style={{
-            background: loading ? '#333' : '#0071e3',
-            color: loading ? '#666' : '#ffffff',
+            fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif",
+            borderRadius: '9999px',
+            background: loading ? '#e5e5e5' : '#c8ff00',
+            color: '#111111',
+            fontWeight: 700,
           }}
           onMouseEnter={(e) => {
-            if (!loading) e.currentTarget.style.background = '#0077ed';
+            if (!loading) {
+              e.currentTarget.style.background = '#b8ee00';
+              e.currentTarget.style.boxShadow = '0 4px 14px rgba(200, 255, 0, 0.4)';
+            }
           }}
           onMouseLeave={(e) => {
-            if (!loading) e.currentTarget.style.background = '#0071e3';
+            if (!loading) {
+              e.currentTarget.style.background = '#c8ff00';
+              e.currentTarget.style.boxShadow = 'none';
+            }
           }}
         >
           {loading ? (
@@ -57,38 +69,43 @@ export default function EpicDisplay({ epicData, onValidate, loading }) {
         </button>
       </div>
 
-      {/* Goal Card */}
+      {/* Goal Card — DARK */}
       <div
-        className="rounded-2xl p-8"
+        className="p-8"
         style={{
-          background: 'rgba(28, 28, 30, 0.8)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: '#1a1a2e',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
         <div className="flex items-center gap-3 mb-4">
           <div
-            className="p-2.5 rounded-xl"
-            style={{ background: 'rgba(0, 113, 227, 0.12)' }}
+            className="p-2.5"
+            style={{
+              borderRadius: '12px',
+              background: 'rgba(200, 255, 0, 0.15)',
+            }}
           >
-            <Target className="w-5 h-5" style={{ color: '#0071e3' }} />
+            <Target className="w-5 h-5" style={{ color: '#c8ff00' }} />
           </div>
-          <h3 className="text-lg font-semibold" style={{ color: '#f5f5f7' }}>Goal</h3>
+          <h3 className="text-xl font-semibold" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#ffffff', fontWeight: 700 }}>Goal</h3>
         </div>
-        <p className="leading-relaxed text-base" style={{ color: '#86868b' }}>{goal}</p>
+        <p className="leading-relaxed text-base" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#ffffff' }}>{goal}</p>
       </div>
 
       {/* Tasks Grid */}
       <div>
         <div className="flex items-center gap-3 mb-5">
           <div
-            className="p-2.5 rounded-xl"
-            style={{ background: 'rgba(0, 113, 227, 0.12)' }}
+            className="p-2.5"
+            style={{
+              borderRadius: '12px',
+              background: 'rgba(200, 255, 0, 0.15)',
+            }}
           >
-            <ListChecks className="w-5 h-5" style={{ color: '#0071e3' }} />
+            <ListChecks className="w-5 h-5" style={{ color: '#c8ff00' }} />
           </div>
-          <h3 className="text-lg font-semibold" style={{ color: '#f5f5f7' }}>
+          <h3 className="text-xl font-semibold" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#111111', fontWeight: 700 }}>
             Tasks ({tasks.length})
           </h3>
         </div>
@@ -96,43 +113,46 @@ export default function EpicDisplay({ epicData, onValidate, loading }) {
           {tasks.map((task, idx) => (
             <div
               key={task.id || idx}
-              className="rounded-2xl p-6 transition-all duration-300"
+              className="p-6 transition-all duration-300"
               style={{
-                background: 'rgba(28, 28, 30, 0.6)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
+                borderRadius: '16px',
+                background: '#ffffff',
+                border: '1px solid #e5e5e5',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-                e.currentTarget.style.background = 'rgba(28, 28, 30, 0.9)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08)';
+                e.currentTarget.style.borderColor = '#c8ff00';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-                e.currentTarget.style.background = 'rgba(28, 28, 30, 0.6)';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.borderColor = '#e5e5e5';
               }}
             >
               <div className="flex items-start justify-between mb-3">
                 <span
-                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                  className="inline-flex items-center px-3 py-1 text-sm font-bold"
                   style={{
-                    background: 'rgba(0, 113, 227, 0.12)',
-                    color: '#0071e3',
+                    borderRadius: '9999px',
+                    background: '#c8ff00',
+                    color: '#111111',
                   }}
                 >
                   {task.id || `T-${idx + 1}`}
                 </span>
                 {task.role && (
                   <span
-                    className="text-xs px-2.5 py-1 rounded-full"
+                    className="text-sm px-2.5 py-1 font-medium"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.06)',
-                      color: '#86868b',
+                      borderRadius: '9999px',
+                      background: '#1a1a2e',
+                      color: '#ffffff',
                     }}
                   >
                     {task.role}
                   </span>
                 )}
               </div>
-              <p className="text-sm mt-2 leading-relaxed" style={{ color: '#86868b' }}>
+              <p className="text-sm mt-2 leading-relaxed" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#111111', fontWeight: 400 }}>
                 {task.description || task.title || 'No description'}
               </p>
 
@@ -140,20 +160,22 @@ export default function EpicDisplay({ epicData, onValidate, loading }) {
               {task.dependencies && task.dependencies.length > 0 && (
                 <div
                   className="mt-4 pt-4"
-                  style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}
+                  style={{ borderTop: '1px solid #e5e5e5' }}
                 >
-                  <div className="flex items-center gap-1.5 text-xs mb-2" style={{ color: '#48484a' }}>
+                  <div className="flex items-center gap-1.5 text-sm mb-2" style={{ color: '#555555' }}>
                     <ArrowRight className="w-3 h-3" />
-                    <span>Depends on:</span>
+                    <span style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif" }}>Depends on:</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {task.dependencies.map((dep, dIdx) => (
                       <span
                         key={dIdx}
-                        className="text-xs px-2.5 py-1 rounded-full"
+                        className="text-sm px-2.5 py-1"
                         style={{
-                          background: 'rgba(255, 255, 255, 0.06)',
-                          color: '#86868b',
+                          borderRadius: '9999px',
+                          background: '#e5e5e5',
+                          color: '#111111',
+                          fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif",
                         }}
                       >
                         {dep}
@@ -170,22 +192,24 @@ export default function EpicDisplay({ epicData, onValidate, loading }) {
       {/* Success Criteria */}
       {successCriteria.length > 0 && (
         <div
-          className="rounded-2xl p-8"
+          className="p-8"
           style={{
-            background: 'rgba(28, 28, 30, 0.8)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#ffffff',
+            borderRadius: '16px',
+            border: '1px solid #e5e5e5',
           }}
         >
           <div className="flex items-center gap-3 mb-5">
             <div
-              className="p-2.5 rounded-xl"
-              style={{ background: 'rgba(48, 209, 88, 0.12)' }}
+              className="p-2.5"
+              style={{
+                borderRadius: '12px',
+                background: 'rgba(200, 255, 0, 0.15)',
+              }}
             >
-              <CheckSquare className="w-5 h-5" style={{ color: '#30d158' }} />
+              <CheckSquare className="w-5 h-5" style={{ color: '#c8ff00' }} />
             </div>
-            <h3 className="text-lg font-semibold" style={{ color: '#f5f5f7' }}>
+            <h3 className="text-xl font-semibold" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#111111', fontWeight: 700 }}>
               Success Criteria
             </h3>
           </div>
@@ -193,10 +217,10 @@ export default function EpicDisplay({ epicData, onValidate, loading }) {
             {successCriteria.map((criterion, idx) => (
               <li key={idx} className="flex items-start gap-3">
                 <div
-                  className="mt-1.5 w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ background: '#30d158' }}
+                  className="mt-1.5 w-2.5 h-2.5 flex-shrink-0"
+                  style={{ borderRadius: '9999px', background: '#c8ff00' }}
                 />
-                <span className="text-sm leading-relaxed" style={{ color: '#86868b' }}>{criterion}</span>
+                <span className="text-sm leading-relaxed" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#111111', fontWeight: 400 }}>{criterion}</span>
               </li>
             ))}
           </ul>

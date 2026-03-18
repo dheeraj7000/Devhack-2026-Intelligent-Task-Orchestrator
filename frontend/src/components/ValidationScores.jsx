@@ -14,16 +14,18 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 
+const fontFamily = "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif";
+
 function getScoreColor(score) {
-  if (score >= 95) return { bar: 'bg-[#30d158]', text: 'text-[#30d158]', bg: 'bg-[#30d158]/10' };
-  if (score >= 90) return { bar: 'bg-[#ff9f0a]', text: 'text-[#ff9f0a]', bg: 'bg-[#ff9f0a]/10' };
-  return { bar: 'bg-[#ff453a]', text: 'text-[#ff453a]', bg: 'bg-[#ff453a]/10' };
+  if (score >= 95) return { bar: '#22c55e', text: '#22c55e', bg: 'rgba(34,197,94,0.1)' };
+  if (score >= 90) return { bar: '#f59e0b', text: '#f59e0b', bg: 'rgba(245,158,11,0.1)' };
+  return { bar: '#ef4444', text: '#ef4444', bg: 'rgba(239,68,68,0.1)' };
 }
 
 function getOverallColor(passed) {
   return passed
-    ? { badge: 'bg-[#30d158]/15 text-[#30d158] border-[#30d158]/25', icon: 'text-[#30d158]' }
-    : { badge: 'bg-[#ff453a]/15 text-[#ff453a] border-[#ff453a]/25', icon: 'text-[#ff453a]' };
+    ? { badge: { backgroundColor: '#c8ff00', color: '#111' }, icon: '#22c55e' }
+    : { badge: { backgroundColor: '#ef4444', color: '#fff' }, icon: '#ef4444' };
 }
 
 function getTriggerLabel(trigger) {
@@ -35,12 +37,12 @@ function getTriggerLabel(trigger) {
   }
 }
 
-function getTriggerColor(trigger) {
+function getTriggerStyle(trigger) {
   switch (trigger) {
-    case 'auto_generate': return 'bg-[#0071e3]/15 text-[#409cff] border-[#0071e3]/20';
-    case 'replan': return 'bg-[#ff9f0a]/15 text-[#ff9f0a] border-[#ff9f0a]/20';
-    case 'manual': return 'bg-[#bf5af2]/15 text-[#bf5af2] border-[#bf5af2]/20';
-    default: return 'bg-white/5 text-[#86868b] border-white/10';
+    case 'auto_generate': return { backgroundColor: 'rgba(200,255,0,0.15)', color: '#111', border: '1px solid rgba(200,255,0,0.3)' };
+    case 'replan': return { backgroundColor: 'rgba(245,158,11,0.15)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.3)' };
+    case 'manual': return { backgroundColor: 'rgba(139,92,246,0.15)', color: '#8b5cf6', border: '1px solid rgba(139,92,246,0.3)' };
+    default: return { backgroundColor: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5' };
   }
 }
 
@@ -84,15 +86,15 @@ export default function ValidationScores({ validationData, validationHistory = [
   const previousScores = previousEntry?.metrics || null;
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 className="text-3xl font-semibold tracking-tight text-[#f5f5f7]">Validation Results</h2>
-          <p className="text-[#86868b] text-sm mt-2">
+          <h2 style={{ fontFamily, fontSize: '34px', fontWeight: 700, letterSpacing: '-0.025em', color: '#111', margin: 0 }}>Validation Results</h2>
+          <p style={{ fontFamily, color: '#555', fontSize: '20px', marginTop: '8px' }}>
             SPOQ quality metrics assessment
             {historyCount > 1 && (
-              <span className="ml-2 text-[#0071e3]">
+              <span style={{ marginLeft: '8px', color: '#f59e0b' }}>
                 ({historyCount} attempts recorded)
               </span>
             )}
@@ -102,7 +104,21 @@ export default function ValidationScores({ validationData, validationHistory = [
           <button
             onClick={onProceed}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-[#1c1c1e] disabled:text-[#86868b] text-white font-medium rounded-full transition-all duration-300"
+            style={{
+              fontFamily,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              backgroundColor: loading ? '#e5e5e5' : '#c8ff00',
+              color: loading ? '#555' : '#111',
+              fontWeight: 500,
+              borderRadius: '9999px',
+              border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s',
+              fontSize: '20px',
+            }}
           >
             {loading ? (
               <>
@@ -119,25 +135,41 @@ export default function ValidationScores({ validationData, validationHistory = [
         )}
       </div>
 
-      {/* Overall Score Card */}
-      <div className="glass rounded-2xl p-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-5">
-            <div className={`p-4 rounded-2xl ${passed ? 'bg-[#30d158]/10' : 'bg-[#ff453a]/10'}`}>
+      {/* Overall Score Card - DARK */}
+      <div style={{
+        backgroundColor: '#1a1a2e',
+        borderRadius: '16px',
+        padding: '32px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div style={{
+              padding: '16px',
+              borderRadius: '16px',
+              backgroundColor: passed ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
+            }}>
               {passed ? (
-                <ShieldCheck className={`w-9 h-9 ${overallColors.icon}`} />
+                <ShieldCheck style={{ width: '36px', height: '36px', color: overallColors.icon }} />
               ) : (
-                <ShieldAlert className={`w-9 h-9 ${overallColors.icon}`} />
+                <ShieldAlert style={{ width: '36px', height: '36px', color: overallColors.icon }} />
               )}
             </div>
             <div>
-              <div className="flex items-center gap-4">
-                <span className="text-5xl font-bold tracking-tight text-[#f5f5f7]">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <span style={{ fontFamily, fontSize: '52px', fontWeight: 700, letterSpacing: '-0.025em', color: '#ffffff' }}>
                   {averageScore.toFixed(1)}
                 </span>
-                <span
-                  className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold border ${overallColors.badge}`}
-                >
+                <span style={{
+                  ...overallColors.badge,
+                  fontFamily,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '6px 16px',
+                  borderRadius: '9999px',
+                  fontSize: '20px',
+                  fontWeight: 600,
+                  border: 'none',
+                }}>
                   {passed ? 'PASS' : 'FAIL'}
                 </span>
                 {/* Show delta from previous attempt */}
@@ -145,23 +177,23 @@ export default function ValidationScores({ validationData, validationHistory = [
                   const delta = getScoreDelta(averageScore, previousEntry.average);
                   if (!delta) return null;
                   return (
-                    <span className={`inline-flex items-center gap-1 text-sm font-medium ${delta > 0 ? 'text-[#30d158]' : 'text-[#ff453a]'}`}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '20px', fontWeight: 500, color: delta > 0 ? '#22c55e' : '#ef4444' }}>
                       {delta > 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                       {delta > 0 ? '+' : ''}{delta.toFixed(1)}
                     </span>
                   );
                 })()}
               </div>
-              <p className="text-[#86868b] text-sm mt-2">
+              <p style={{ fontFamily, color: 'rgba(255,255,255,0.7)', fontSize: '20px', marginTop: '8px' }}>
                 Average Score across all metrics
               </p>
             </div>
           </div>
           {historyCount > 0 && (
-            <div className="text-right">
-              <div className="flex items-center gap-1.5 text-[#86868b]">
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.7)' }}>
                 <History className="w-4 h-4" />
-                <span className="text-sm font-medium">
+                <span style={{ fontFamily, fontSize: '20px', fontWeight: 500 }}>
                   Attempt #{historyCount}
                 </span>
               </div>
@@ -172,12 +204,21 @@ export default function ValidationScores({ validationData, validationHistory = [
 
       {/* Replanning Action */}
       {!passed && (
-        <div className="glass rounded-2xl p-6 flex items-center justify-between border-[#ff9f0a]/20 animate-fade-in" style={{ borderColor: 'rgba(255, 159, 10, 0.15)' }}>
-          <div className="flex items-center gap-4">
-            <RefreshCw className={`w-5 h-5 text-[#ff9f0a] ${loading ? 'animate-spin' : ''}`} />
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '16px',
+          padding: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          border: '1px solid #e5e5e5',
+          borderLeft: '4px solid #f59e0b',
+        }} className="animate-fade-in">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} style={{ color: '#f59e0b' }} />
             <div>
-              <p className="text-[#ff9f0a] font-medium">Replanning Required</p>
-              <p className="text-[#86868b] text-sm mt-0.5">
+              <p style={{ fontFamily, color: '#f59e0b', fontWeight: 500 }}>Replanning Required</p>
+              <p style={{ fontFamily, color: '#555', fontSize: '20px', marginTop: '2px' }}>
                 One or more metrics scored below threshold. Trigger a replan to improve the epic.
                 {historyCount > 1 && ' Full history will be used as feedback.'}
               </p>
@@ -186,7 +227,23 @@ export default function ValidationScores({ validationData, validationHistory = [
           <button
             onClick={onReplan}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#ff9f0a] hover:bg-[#ffb340] disabled:bg-[#1c1c1e] disabled:text-[#86868b] text-black font-medium rounded-full transition-all duration-300 flex-shrink-0 ml-4"
+            style={{
+              fontFamily,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              backgroundColor: loading ? '#e5e5e5' : '#f59e0b',
+              color: loading ? '#555' : '#111',
+              fontWeight: 500,
+              borderRadius: '9999px',
+              border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s',
+              flexShrink: 0,
+              marginLeft: '16px',
+              fontSize: '20px',
+            }}
           >
             {loading ? (
               <>
@@ -205,19 +262,35 @@ export default function ValidationScores({ validationData, validationHistory = [
 
       {/* Recurring Weak Areas Warning */}
       {recurringWeakMetrics.length > 0 && !passed && (
-        <div className="glass rounded-2xl p-6 animate-fade-in" style={{ borderColor: 'rgba(255, 69, 58, 0.15)' }}>
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-4 h-4 text-[#ff453a]" />
-            <p className="text-[#ff453a] font-medium text-sm">Recurring Weak Areas</p>
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '16px',
+          padding: '24px',
+          border: '1px solid #e5e5e5',
+          borderLeft: '4px solid #f59e0b',
+        }} className="animate-fade-in">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <AlertTriangle style={{ width: '16px', height: '16px', color: '#ef4444' }} />
+            <p style={{ fontFamily, color: '#ef4444', fontWeight: 500, fontSize: '20px' }}>Recurring Weak Areas</p>
           </div>
-          <p className="text-[#86868b] text-sm mb-3">
+          <p style={{ fontFamily, color: '#555', fontSize: '20px', marginBottom: '12px' }}>
             These metrics have failed in 2 or more attempts and need special attention:
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {recurringWeakMetrics.map((metric) => (
               <span
                 key={metric}
-                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#ff453a]/10 text-[#ff453a] border border-[#ff453a]/20"
+                style={{
+                  fontFamily,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '4px 12px',
+                  borderRadius: '9999px',
+                  fontSize: '20px',
+                  fontWeight: 500,
+                  backgroundColor: '#ef4444',
+                  color: '#ffffff',
+                }}
               >
                 {metric.replace(/_/g, ' ')} ({weakMetricCounts[metric]}x)
               </span>
@@ -228,11 +301,11 @@ export default function ValidationScores({ validationData, validationHistory = [
 
       {/* Individual Metrics */}
       <div>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="p-2.5 bg-[#0071e3]/10 rounded-xl">
-            <TrendingUp className="w-5 h-5 text-[#0071e3]" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+          <div style={{ padding: '10px', backgroundColor: 'rgba(200,255,0,0.15)', borderRadius: '16px' }}>
+            <TrendingUp style={{ width: '20px', height: '20px', color: '#111' }} />
           </div>
-          <h3 className="text-lg font-semibold text-[#f5f5f7]">Detailed Metrics</h3>
+          <h3 style={{ fontFamily, fontSize: '20px', fontWeight: 600, color: '#111' }}>Detailed Metrics</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Object.entries(scores).map(([metric, score]) => {
@@ -244,34 +317,43 @@ export default function ValidationScores({ validationData, validationHistory = [
             return (
               <div
                 key={metric}
-                className={`glass rounded-2xl p-5 transition-all duration-300 hover:bg-white/[0.04] ${
-                  isRecurringWeak ? '!border-[#ff453a]/20' : ''
-                }`}
+                style={{
+                  backgroundColor: '#ffffff',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  border: isRecurringWeak ? '1px solid rgba(239,68,68,0.3)' : '1px solid #e5e5e5',
+                  transition: 'all 0.3s',
+                }}
               >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-[#f5f5f7] capitalize">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontFamily, fontSize: '20px', fontWeight: 500, color: '#111', textTransform: 'capitalize' }}>
                       {metric.replace(/_/g, ' ')}
                     </span>
                     {isRecurringWeak && (
-                      <AlertTriangle className="w-3.5 h-3.5 text-[#ff453a]" />
+                      <AlertTriangle style={{ width: '14px', height: '14px', color: '#ef4444' }} />
                     )}
                   </div>
-                  <div className="flex items-center gap-2.5">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     {delta != null && (
-                      <span className={`text-xs font-medium ${delta > 0 ? 'text-[#30d158]' : 'text-[#ff453a]'}`}>
+                      <span style={{ fontSize: '20px', fontWeight: 500, color: delta > 0 ? '#22c55e' : '#ef4444' }}>
                         {delta > 0 ? '+' : ''}{delta.toFixed(1)}
                       </span>
                     )}
-                    <span className={`text-sm font-bold ${colors.text}`}>
+                    <span style={{ fontSize: '20px', fontWeight: 700, color: colors.text }}>
                       {score.toFixed(1)}
                     </span>
                   </div>
                 </div>
-                <div className="w-full bg-white/[0.06] rounded-full h-1.5">
+                <div style={{ width: '100%', borderRadius: '9999px', height: '8px', backgroundColor: '#e5e5e5' }}>
                   <div
-                    className={`h-1.5 rounded-full transition-all duration-700 ease-out ${colors.bar}`}
-                    style={{ width: `${Math.min(score, 100)}%` }}
+                    style={{
+                      height: '8px',
+                      borderRadius: '9999px',
+                      transition: 'all 0.7s ease-out',
+                      width: `${Math.min(score, 100)}%`,
+                      backgroundColor: colors.bar,
+                    }}
                   />
                 </div>
               </div>
@@ -285,24 +367,33 @@ export default function ValidationScores({ validationData, validationHistory = [
         <div>
           <button
             onClick={() => setHistoryExpanded(!historyExpanded)}
-            className="flex items-center gap-3 mb-5 group"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '20px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
           >
-            <div className="p-2.5 bg-white/[0.05] rounded-xl group-hover:bg-white/[0.08] transition-colors duration-300">
-              <History className="w-5 h-5 text-[#86868b]" />
+            <div style={{ padding: '10px', backgroundColor: 'rgba(200,255,0,0.1)', borderRadius: '16px', transition: 'background-color 0.3s' }}>
+              <History style={{ width: '20px', height: '20px', color: '#555' }} />
             </div>
-            <h3 className="text-lg font-semibold text-[#f5f5f7]">
+            <h3 style={{ fontFamily, fontSize: '20px', fontWeight: 600, color: '#111' }}>
               Validation History ({historyCount} attempts)
             </h3>
             {historyExpanded
-              ? <ChevronUp className="w-4 h-4 text-[#86868b]" />
-              : <ChevronDown className="w-4 h-4 text-[#86868b]" />
+              ? <ChevronUp style={{ width: '16px', height: '16px', color: '#555' }} />
+              : <ChevronDown style={{ width: '16px', height: '16px', color: '#555' }} />
             }
           </button>
 
           {historyExpanded && (
-            <div className="relative pl-6 space-y-4 animate-fade-in">
+            <div style={{ position: 'relative', paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }} className="animate-fade-in">
               {/* Timeline line */}
-              <div className="absolute left-[11px] top-2 bottom-2 w-px bg-white/[0.08]" />
+              <div style={{ position: 'absolute', left: '11px', top: '8px', bottom: '8px', width: '1px', backgroundColor: '#e5e5e5' }} />
 
               {validationHistory.map((entry, idx) => {
                 const isLatest = idx === historyCount - 1;
@@ -311,67 +402,107 @@ export default function ValidationScores({ validationData, validationHistory = [
                 const prevEntry = idx > 0 ? validationHistory[idx - 1] : null;
                 const avgDelta = prevEntry ? getScoreDelta(entryAvg, prevEntry.average) : null;
 
-                return (
-                  <div key={idx} className="relative">
-                    {/* Timeline dot */}
-                    <div className={`absolute -left-6 top-3 w-2.5 h-2.5 rounded-full border-2 ${
-                      entry.passed
-                        ? 'bg-[#30d158] border-[#30d158]/60'
-                        : isLatest
-                        ? 'bg-[#ff453a] border-[#ff453a]/60 animate-pulse'
-                        : 'bg-[#86868b]/40 border-[#86868b]/30'
-                    }`} />
+                const dotColor = entry.passed
+                  ? '#22c55e'
+                  : isLatest
+                  ? '#ef4444'
+                  : '#ccc';
 
-                    <div className={`glass rounded-2xl p-5 ${
-                      isLatest ? '!border-[#0071e3]/20' : ''
-                    }`}>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-[#f5f5f7]">
+                return (
+                  <div key={idx} style={{ position: 'relative' }}>
+                    {/* Timeline dot */}
+                    <div style={{
+                      position: 'absolute',
+                      left: '-24px',
+                      top: '12px',
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '9999px',
+                      backgroundColor: dotColor,
+                      border: `2px solid ${dotColor}`,
+                      ...(isLatest && !entry.passed ? { animation: 'pulse 2s infinite' } : {}),
+                    }} />
+
+                    <div style={{
+                      backgroundColor: '#ffffff',
+                      borderRadius: '16px',
+                      padding: '20px',
+                      border: isLatest ? '1px solid rgba(245,158,11,0.3)' : '1px solid #e5e5e5',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ fontFamily, fontSize: '20px', fontWeight: 600, color: '#111' }}>
                             Attempt #{entry.attempt_number}
                           </span>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getTriggerColor(entry.trigger)}`}>
+                          <span style={{
+                            ...getTriggerStyle(entry.trigger),
+                            fontFamily,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            padding: '2px 10px',
+                            borderRadius: '9999px',
+                            fontSize: '20px',
+                            fontWeight: 500,
+                          }}>
                             {getTriggerLabel(entry.trigger)}
                           </span>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
-                            entry.passed
-                              ? 'bg-[#30d158]/15 text-[#30d158] border-[#30d158]/20'
-                              : 'bg-[#ff453a]/15 text-[#ff453a] border-[#ff453a]/20'
-                          }`}>
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            padding: '2px 10px',
+                            borderRadius: '9999px',
+                            fontSize: '20px',
+                            fontWeight: 600,
+                            backgroundColor: entry.passed ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
+                            color: entry.passed ? '#22c55e' : '#ef4444',
+                            border: entry.passed ? '1px solid rgba(34,197,94,0.2)' : '1px solid rgba(239,68,68,0.2)',
+                          }}>
                             {entry.passed ? 'PASS' : 'FAIL'}
                           </span>
                           {isLatest && (
-                            <span className="text-xs text-[#0071e3] font-medium">(current)</span>
+                            <span style={{ fontSize: '20px', color: '#f59e0b', fontWeight: 500 }}>(current)</span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2.5">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           {avgDelta != null && (
-                            <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${avgDelta > 0 ? 'text-[#30d158]' : 'text-[#ff453a]'}`}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', fontSize: '20px', fontWeight: 500, color: avgDelta > 0 ? '#22c55e' : '#ef4444' }}>
                               {avgDelta > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                               {avgDelta > 0 ? '+' : ''}{avgDelta.toFixed(1)}
                             </span>
                           )}
-                          <span className="text-sm font-bold text-[#f5f5f7]">
+                          <span style={{ fontSize: '20px', fontWeight: 700, color: '#111' }}>
                             {entryAvg.toFixed(1)}
                           </span>
                         </div>
                       </div>
 
                       {/* Compact metric bars */}
-                      <div className="grid grid-cols-5 gap-1.5 mb-3">
+                      <div className="grid grid-cols-5 gap-1.5" style={{ marginBottom: '12px' }}>
                         {Object.entries(entryScores).map(([metric, score]) => {
                           const colors = getScoreColor(score);
                           return (
-                            <div key={metric} className="group/metric relative">
-                              <div className="w-full bg-white/[0.06] rounded-full h-1.5">
+                            <div key={metric} className="group/metric" style={{ position: 'relative' }}>
+                              <div style={{ width: '100%', borderRadius: '9999px', height: '6px', backgroundColor: '#e5e5e5' }}>
                                 <div
-                                  className={`h-1.5 rounded-full ${colors.bar}`}
-                                  style={{ width: `${Math.min(score, 100)}%` }}
+                                  style={{
+                                    height: '6px',
+                                    borderRadius: '9999px',
+                                    width: `${Math.min(score, 100)}%`,
+                                    backgroundColor: colors.bar,
+                                  }}
                                 />
                               </div>
                               {/* Tooltip */}
                               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover/metric:block z-10">
-                                <div className="bg-[#1c1c1e] border border-white/[0.08] rounded-lg px-2.5 py-1.5 text-xs text-[#f5f5f7] whitespace-nowrap shadow-xl">
+                                <div style={{
+                                  backgroundColor: '#1a1a2e',
+                                  borderRadius: '8px',
+                                  padding: '6px 10px',
+                                  fontSize: '20px',
+                                  color: '#ffffff',
+                                  whiteSpace: 'nowrap',
+                                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                }}>
                                   {metric.replace(/_/g, ' ')}: {score}
                                 </div>
                               </div>
@@ -382,9 +513,17 @@ export default function ValidationScores({ validationData, validationHistory = [
 
                       {/* Low metrics and feedback */}
                       {entry.low_metrics && Object.keys(entry.low_metrics).length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-3">
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px' }}>
                           {Object.entries(entry.low_metrics).map(([metric, score]) => (
-                            <span key={metric} className="text-xs px-2.5 py-1 bg-[#ff453a]/10 text-[#ff453a] rounded-full border border-[#ff453a]/15">
+                            <span key={metric} style={{
+                              fontFamily,
+                              fontSize: '20px',
+                              padding: '4px 10px',
+                              backgroundColor: 'rgba(239,68,68,0.1)',
+                              color: '#ef4444',
+                              borderRadius: '9999px',
+                              border: '1px solid rgba(239,68,68,0.15)',
+                            }}>
                               {metric.replace(/_/g, ' ')}: {score}
                             </span>
                           ))}
@@ -392,7 +531,7 @@ export default function ValidationScores({ validationData, validationHistory = [
                       )}
 
                       {entry.created_at && (
-                        <div className="flex items-center gap-1.5 mt-3 text-xs text-[#86868b]">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '12px', fontSize: '20px', color: '#555' }}>
                           <Clock className="w-3 h-3" />
                           {new Date(entry.created_at).toLocaleTimeString()}
                         </div>

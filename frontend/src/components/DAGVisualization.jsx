@@ -11,17 +11,20 @@ import {
 import '@xyflow/react/dist/style.css';
 import { GitBranch, ChevronRight, Loader2 } from 'lucide-react';
 
+const FONT = "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif";
+
+// Vivid role colors — designed for maximum contrast on dark canvas
 const ROLE_COLORS = {
-  'UI/UX Engineer': { bg: '#be185d', border: '#ec4899' },
-  'Frontend Engineer': { bg: '#1d4ed8', border: '#3b82f6' },
-  'Backend Engineer': { bg: '#15803d', border: '#22c55e' },
-  'Data Engineer': { bg: '#a16207', border: '#eab308' },
-  'DevOps Engineer': { bg: '#c2410c', border: '#f97316' },
-  'ML Engineer': { bg: '#7e22ce', border: '#a855f7' },
-  'Test Engineer': { bg: '#0e7490', border: '#06b6d4' },
+  'UI/UX Engineer': { bg: '#e06b9e', border: '#e06b9e', glow: 'rgba(224,107,158,0.25)' },
+  'Frontend Engineer': { bg: '#5ba3d9', border: '#5ba3d9', glow: 'rgba(91,163,217,0.25)' },
+  'Backend Engineer': { bg: '#4caf7c', border: '#4caf7c', glow: 'rgba(76,175,124,0.25)' },
+  'Data Engineer': { bg: '#e8a83e', border: '#e8a83e', glow: 'rgba(232,168,62,0.25)' },
+  'DevOps Engineer': { bg: '#47b5a0', border: '#47b5a0', glow: 'rgba(71,181,160,0.25)' },
+  'ML Engineer': { bg: '#9b7ed6', border: '#9b7ed6', glow: 'rgba(155,126,214,0.25)' },
+  'Test Engineer': { bg: '#e07850', border: '#e07850', glow: 'rgba(224,120,80,0.25)' },
 };
 
-const DEFAULT_COLOR = { bg: '#475569', border: '#64748b' };
+const DEFAULT_COLOR = { bg: '#8a8a88', border: '#8a8a88', glow: 'rgba(138,138,136,0.15)' };
 
 function getColorForRole(role) {
   if (!role) return DEFAULT_COLOR;
@@ -37,7 +40,6 @@ function buildGraph(epicData, dagData) {
 
   if (tasks.length === 0) return { nodes: [], edges: [] };
 
-  // Build task lookup by ID
   const taskMap = {};
   const taskIds = [];
   tasks.forEach((t, idx) => {
@@ -46,7 +48,6 @@ function buildGraph(epicData, dagData) {
     taskIds.push(id);
   });
 
-  // Collect all edges from multiple sources, deduplicating
   const edgeSet = new Set();
   const edgeList = [];
   const addEdge = (from, to) => {
@@ -58,7 +59,6 @@ function buildGraph(epicData, dagData) {
     edgeList.push({ from, to });
   };
 
-  // Source 1: dagData.adjacency_list — { node_id: [successor_ids] }
   const adjList = dagData?.adjacency_list || {};
   Object.entries(adjList).forEach(([from, successors]) => {
     if (Array.isArray(successors)) {
@@ -66,17 +66,15 @@ function buildGraph(epicData, dagData) {
     }
   });
 
-  // Source 2: per-task dependencies — task.dependencies = ["dep_id", ...]
   tasks.forEach((task, idx) => {
     const taskId = task.id || `T-${idx + 1}`;
     if (Array.isArray(task.dependencies)) {
       task.dependencies.forEach((depId) => {
-        addEdge(depId, taskId); // depId -> taskId (task depends on depId)
+        addEdge(depId, taskId);
       });
     }
   });
 
-  // Compute layers via BFS topological sort
   const inDegree = {};
   const adj = {};
   taskIds.forEach((id) => {
@@ -108,12 +106,10 @@ function buildGraph(epicData, dagData) {
     });
   }
 
-  // Assign unvisited nodes to layer 0
   taskIds.forEach((id) => {
     if (layers[id] === undefined) layers[id] = 0;
   });
 
-  // Group nodes by layer
   const layerGroups = {};
   taskIds.forEach((id) => {
     const layer = layers[id];
@@ -121,11 +117,15 @@ function buildGraph(epicData, dagData) {
     layerGroups[layer].push(id);
   });
 
-  const NODE_WIDTH = 280;
-  const LAYER_GAP_Y = 160;
-  const NODE_GAP_X = 320;
+  const NODE_WIDTH = 260;
+  const LAYER_GAP_Y = 220;
+  const NODE_GAP_X = NODE_WIDTH + 60; // 60px gap between nodes
 
-  // Build React Flow nodes
+  // Find the widest layer to calculate canvas center
+  const maxNodesInLayer = Math.max(...Object.values(layerGroups).map((g) => g.length), 1);
+  const totalCanvasWidth = maxNodesInLayer * NODE_GAP_X;
+  const centerX = totalCanvasWidth / 2 + 80; // pad left
+
   const nodes = taskIds.map((id) => {
     const task = taskMap[id] || {};
     const layer = layers[id] || 0;
@@ -133,107 +133,82 @@ function buildGraph(epicData, dagData) {
     const indexInLayer = group.indexOf(id);
     const totalInLayer = group.length;
     const offsetX = (indexInLayer - (totalInLayer - 1) / 2) * NODE_GAP_X;
-    const centerX = 600;
 
     const roleColors = getColorForRole(task.role);
     const description = task.description || task.title || '';
-    const techDetails = task.technical_details;
 
     return {
       id,
       position: {
         x: centerX + offsetX,
-        y: layer * LAYER_GAP_Y + 50,
+        y: layer * LAYER_GAP_Y + 60,
       },
       data: {
         label: (
-          <div style={{ padding: '4px 0' }}>
-            {/* Header row: ID + Role */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ fontWeight: 600, fontSize: 12, color: roleColors.border, letterSpacing: '0.02em' }}>
+          <div style={{ padding: '2px 0' }}>
+            {/* Header: ID + Role */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <span style={{
+                fontWeight: 700,
+                fontSize: 12,
+                color: '#fff',
+                letterSpacing: '0.04em',
+                fontFamily: FONT,
+                textTransform: 'uppercase',
+              }}>
                 {id}
               </span>
               {task.role && (
-                <span
-                  style={{
-                    fontSize: 9,
-                    padding: '2px 8px',
-                    borderRadius: 20,
-                    backgroundColor: roleColors.bg + '30',
-                    color: roleColors.border,
-                    fontWeight: 500,
-                    letterSpacing: '0.01em',
-                  }}
-                >
-                  {task.role}
+                <span style={{
+                  fontSize: 9,
+                  padding: '2px 7px',
+                  borderRadius: 4,
+                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  color: '#fff',
+                  fontWeight: 600,
+                  fontFamily: FONT,
+                  whiteSpace: 'nowrap',
+                }}>
+                  {task.role.replace(' Engineer', '')}
                 </span>
               )}
             </div>
-            {/* Description */}
-            <div style={{ fontSize: 11, color: '#f5f5f7', lineHeight: 1.5, marginBottom: techDetails ? 8 : 0, opacity: 0.85 }}>
-              {description.length > 100 ? description.substring(0, 100) + '...' : description}
+            {/* Description — compact, max 2 lines */}
+            <div style={{
+              fontSize: 11,
+              color: 'rgba(255,255,255,0.88)',
+              lineHeight: 1.45,
+              fontFamily: FONT,
+              fontWeight: 400,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}>
+              {description}
             </div>
-            {/* Tech stack tags */}
-            {techDetails?.tech_stack?.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
-                {techDetails.tech_stack.slice(0, 4).map((tech) => (
-                  <span
-                    key={tech}
-                    style={{
-                      fontSize: 9,
-                      padding: '2px 6px',
-                      borderRadius: 20,
-                      backgroundColor: 'rgba(255,255,255,0.06)',
-                      color: '#86868b',
-                      fontWeight: 500,
-                    }}
-                  >
-                    {tech}
-                  </span>
-                ))}
-                {techDetails.tech_stack.length > 4 && (
-                  <span style={{ fontSize: 9, color: '#86868b' }}>
-                    +{techDetails.tech_stack.length - 4}
-                  </span>
-                )}
-              </div>
-            )}
-            {/* Inputs/Outputs indicator */}
-            {techDetails && (techDetails.inputs?.length > 0 || techDetails.outputs?.length > 0) && (
-              <div style={{ display: 'flex', gap: 10, marginTop: 6, fontSize: 9, color: '#86868b' }}>
-                {techDetails.inputs?.length > 0 && (
-                  <span>{techDetails.inputs.length} input{techDetails.inputs.length > 1 ? 's' : ''}</span>
-                )}
-                {techDetails.outputs?.length > 0 && (
-                  <span>{techDetails.outputs.length} output{techDetails.outputs.length > 1 ? 's' : ''}</span>
-                )}
-                {techDetails.estimated_hours && (
-                  <span>{techDetails.estimated_hours}h</span>
-                )}
-              </div>
-            )}
           </div>
         ),
       },
       style: {
         width: NODE_WIDTH,
-        background: '#1c1c1e',
-        border: `1.5px solid ${roleColors.border}`,
-        borderRadius: 16,
-        padding: '12px 16px',
-        boxShadow: `0 8px 32px ${roleColors.bg}20, 0 0 0 1px rgba(255,255,255,0.04)`,
+        background: roleColors.bg,
+        border: '2px solid rgba(255,255,255,0.2)',
+        borderRadius: 10,
+        padding: '10px 14px',
+        boxShadow: `0 4px 20px ${roleColors.glow}, 0 2px 6px rgba(0,0,0,0.25)`,
       },
     };
   });
 
-  // Build React Flow edges
-  const edges = edgeList.map(({ from, to }, idx) => ({
+  // Edges: LIME GREEN with glow for visibility on dark bg
+  const edges = edgeList.map(({ from, to }) => ({
     id: `edge-${from}-${to}`,
     source: from,
     target: to,
     animated: true,
-    style: { stroke: '#0071e3', strokeWidth: 2 },
-    markerEnd: { type: MarkerType.ArrowClosed, color: '#0071e3', width: 18, height: 18 },
+    style: { stroke: '#c8ff00', strokeWidth: 2.5, filter: 'drop-shadow(0 0 4px rgba(200,255,0,0.4))' },
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#c8ff00', width: 20, height: 20 },
   }));
 
   return { nodes, edges };
@@ -248,7 +223,6 @@ export default function DAGVisualization({ dagData, epicData, onAssign, loading 
   const [nodes, setNodes, onNodesChange] = useNodesState(graphNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(graphEdges);
 
-  // Update nodes/edges when data changes
   useEffect(() => {
     setNodes(graphNodes);
     setEdges(graphEdges);
@@ -257,20 +231,19 @@ export default function DAGVisualization({ dagData, epicData, onAssign, loading 
   const epic = epicData?.epic || epicData;
   const tasks = epic?.tasks || [];
 
-  // Stats
   const depCount = graphEdges.length;
   const layerCount = new Set(graphNodes.map((n) => n.position.y)).size;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 style={{ fontSize: 32, fontWeight: 700, color: '#f5f5f7', letterSpacing: '-0.02em', margin: 0, lineHeight: 1.2 }}>
-            DAG Visualization
+          <h2 style={{ fontSize: 34, fontWeight: 700, color: '#111', letterSpacing: '-0.01em', margin: 0, lineHeight: 1.2, fontFamily: FONT }}>
+            Dependency Graph
           </h2>
-          <p style={{ color: '#86868b', fontSize: 15, marginTop: 6, fontWeight: 400 }}>
-            {tasks.length} tasks &middot; {depCount} dependencies &middot; {layerCount} layers
+          <p style={{ color: '#111', fontSize: 19, marginTop: 6, fontWeight: 400, fontFamily: FONT }}>
+            <strong>{tasks.length}</strong> tasks &middot; <strong>{depCount}</strong> dependencies &middot; <strong>{layerCount}</strong> execution layers
           </p>
         </div>
         <button
@@ -281,15 +254,15 @@ export default function DAGVisualization({ dagData, epicData, onAssign, loading 
             alignItems: 'center',
             gap: 8,
             padding: '12px 28px',
-            backgroundColor: loading ? '#1c1c1e' : '#0071e3',
-            color: loading ? '#86868b' : '#ffffff',
-            fontWeight: 500,
-            fontSize: 15,
-            borderRadius: 980,
+            backgroundColor: loading ? '#e5e5e5' : '#c8ff00',
+            color: loading ? '#999' : '#111',
+            fontWeight: 600,
+            fontSize: 19,
+            borderRadius: 9999,
             border: 'none',
             cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'all 0.3s ease',
-            letterSpacing: '-0.01em',
+            transition: 'all 0.2s ease',
+            fontFamily: FONT,
           }}
         >
           {loading ? (
@@ -306,15 +279,15 @@ export default function DAGVisualization({ dagData, epicData, onAssign, loading 
         </button>
       </div>
 
-      {/* DAG Canvas */}
+      {/* DAG Canvas — DARK background for maximum contrast */}
       <div
         style={{
-          height: 600,
-          borderRadius: 20,
+          height: 700,
+          borderRadius: 16,
           overflow: 'hidden',
-          background: '#000',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 4px 40px rgba(0,0,0,0.5)',
+          background: '#1a1a2e',
+          border: '1px solid rgba(255,255,255,0.1)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
         }}
       >
         {graphNodes.length > 0 ? (
@@ -324,43 +297,42 @@ export default function DAGVisualization({ dagData, epicData, onAssign, loading 
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             fitView
-            fitViewOptions={{ padding: 0.3 }}
-            minZoom={0.2}
+            fitViewOptions={{ padding: 0.35 }}
+            minZoom={0.15}
             maxZoom={2}
             attributionPosition="bottom-left"
             defaultEdgeOptions={{
               animated: true,
-              style: { stroke: '#0071e3', strokeWidth: 2 },
-              markerEnd: { type: MarkerType.ArrowClosed, color: '#0071e3' },
+              style: { stroke: '#c8ff00', strokeWidth: 2.5 },
+              markerEnd: { type: MarkerType.ArrowClosed, color: '#c8ff00' },
             }}
           >
-            <Background color="#222" gap={24} size={1} />
+            <Background color="rgba(255,255,255,0.03)" gap={28} size={1} />
             <Controls
               style={{
-                background: '#1c1c1e',
-                borderRadius: 12,
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: '#2a2a35',
+                borderRadius: 6,
+                border: '1px solid rgba(255,255,255,0.1)',
               }}
             />
             <MiniMap
               nodeColor={(node) => {
-                const borderStyle = node.style?.border || '';
-                const match = borderStyle.match(/#[0-9a-fA-F]{6}/);
-                return match ? match[0] : '#0071e3';
+                const bg = node.style?.background;
+                return bg || '#c8ff00';
               }}
-              maskColor="rgba(0, 0, 0, 0.85)"
+              maskColor="rgba(26,26,46,0.8)"
               style={{
-                background: '#111',
-                borderRadius: 12,
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: '#2a2a35',
+                borderRadius: 6,
+                border: '1px solid rgba(255,255,255,0.1)',
               }}
             />
           </ReactFlow>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
             <div style={{ textAlign: 'center' }}>
-              <GitBranch style={{ width: 48, height: 48, margin: '0 auto 16px', color: '#86868b', opacity: 0.4 }} />
-              <p style={{ color: '#86868b', fontSize: 15 }}>No tasks to visualize</p>
+              <GitBranch style={{ width: 48, height: 48, margin: '0 auto 16px', color: 'rgba(255,255,255,0.3)' }} />
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 19, fontFamily: FONT }}>No tasks to visualize</p>
             </div>
           </div>
         )}
@@ -369,43 +341,31 @@ export default function DAGVisualization({ dagData, epicData, onAssign, loading 
       {/* Legend */}
       <div
         style={{
-          background: 'rgba(255,255,255,0.03)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: 20,
-          padding: '20px 28px',
+          background: '#ffffff',
+          border: '1px solid #e5e5e5',
+          borderRadius: 16,
+          padding: '18px 24px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <h4 style={{ fontSize: 13, fontWeight: 500, color: '#86868b', marginBottom: 14, letterSpacing: '0.02em' }}>
-              Role Colors
-            </h4>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-              {Object.entries(ROLE_COLORS).map(([role, colors]) => (
-                <div key={role} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: '50%',
-                      backgroundColor: colors.border,
-                    }}
-                  />
-                  <span style={{ fontSize: 12, color: '#86868b', fontWeight: 400 }}>{role}</span>
-                </div>
-              ))}
-            </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
+            {Object.entries(ROLE_COLORS).map(([role, colors]) => (
+              <div key={role} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <div style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 3,
+                  backgroundColor: colors.bg,
+                  boxShadow: `0 1px 4px ${colors.glow}`,
+                }} />
+                <span style={{ fontSize: 16, color: '#111', fontWeight: 500, fontFamily: FONT }}>{role}</span>
+              </div>
+            ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 24, height: 2, backgroundColor: '#0071e3', borderRadius: 1 }} />
-              <span style={{ fontSize: 12, color: '#86868b' }}>Dependency</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 12, height: 12, borderRadius: 4, border: '1.5px solid rgba(255,255,255,0.2)', background: '#1c1c1e' }} />
-              <span style={{ fontSize: 12, color: '#86868b' }}>Task Node</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 20, height: 2, backgroundColor: '#c8ff00', borderRadius: 1 }} />
+              <span style={{ fontSize: 16, color: '#111', fontFamily: FONT }}>Dependency</span>
             </div>
           </div>
         </div>

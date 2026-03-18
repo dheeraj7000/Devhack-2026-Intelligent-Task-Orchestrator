@@ -34,46 +34,51 @@ export default function HumanApproval({ epicData, onApprove, loading }) {
       {/* Header */}
       <div className="text-center">
         <div
-          className="inline-flex items-center justify-center p-3.5 rounded-2xl mb-5"
-          style={{ background: 'rgba(255, 159, 10, 0.12)' }}
+          className="inline-flex items-center justify-center p-3.5 mb-5"
+          style={{
+            borderRadius: '16px',
+            background: 'rgba(200, 255, 0, 0.15)',
+          }}
         >
-          <UserCheck className="w-8 h-8" style={{ color: '#ff9f0a' }} />
+          <UserCheck className="w-8 h-8" style={{ color: '#c8ff00' }} />
         </div>
-        <h2 className="text-3xl font-bold tracking-tight mb-2" style={{ color: '#f5f5f7' }}>
+        <h2
+          className="text-5xl font-bold tracking-tight mb-2"
+          style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#111111', fontWeight: 700 }}
+        >
           Human Approval
         </h2>
-        <p className="text-base font-light" style={{ color: '#86868b' }}>
+        <p className="text-base" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#555555', fontWeight: 400 }}>
           Review the epic and decide whether to approve or request changes
         </p>
       </div>
 
-      {/* Epic Summary Card */}
+      {/* Epic Summary Card — DARK */}
       <div
-        className="rounded-2xl p-8"
+        className="p-8"
         style={{
-          background: 'rgba(28, 28, 30, 0.8)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: '#1a1a2e',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
         {/* Goal */}
         <div className="mb-6">
           <div className="flex items-center gap-2.5 mb-3">
-            <Target className="w-4 h-4" style={{ color: '#0071e3' }} />
-            <span className="text-sm font-medium" style={{ color: '#86868b' }}>Goal</span>
+            <Target className="w-4 h-4" style={{ color: '#c8ff00' }} />
+            <span className="text-sm font-medium" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: 'rgba(255, 255, 255, 0.7)' }}>Goal</span>
           </div>
-          <p className="leading-relaxed" style={{ color: '#f5f5f7' }}>{goal}</p>
+          <p className="leading-relaxed" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#ffffff' }}>{goal}</p>
         </div>
 
         {/* Tasks Summary */}
         <div
           className="pt-6"
-          style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}
+          style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <ListChecks className="w-4 h-4" style={{ color: '#0071e3' }} />
-            <span className="text-sm font-medium" style={{ color: '#86868b' }}>
+            <ListChecks className="w-4 h-4" style={{ color: '#c8ff00' }} />
+            <span className="text-sm font-medium" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: 'rgba(255, 255, 255, 0.7)' }}>
               Tasks ({tasks.length})
             </span>
           </div>
@@ -81,19 +86,24 @@ export default function HumanApproval({ epicData, onApprove, loading }) {
             {tasks.map((task, idx) => (
               <div
                 key={task.id || idx}
-                className="flex items-start gap-3 p-3 rounded-xl"
-                style={{ background: 'rgba(0, 0, 0, 0.3)' }}
+                className="flex items-start gap-3 p-3"
+                style={{
+                  borderRadius: '12px',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
               >
                 <span
-                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 mt-0.5"
+                  className="inline-flex items-center px-2.5 py-0.5 text-sm font-bold flex-shrink-0 mt-0.5"
                   style={{
-                    background: 'rgba(0, 113, 227, 0.12)',
-                    color: '#0071e3',
+                    borderRadius: '9999px',
+                    background: '#c8ff00',
+                    color: '#111111',
                   }}
                 >
                   {task.id || `T-${idx + 1}`}
                 </span>
-                <span className="text-sm leading-relaxed" style={{ color: '#86868b' }}>
+                <span className="text-sm leading-relaxed" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#ffffff' }}>
                   {task.description || task.title || 'No description'}
                 </span>
               </div>
@@ -105,17 +115,16 @@ export default function HumanApproval({ epicData, onApprove, loading }) {
       {/* Feedback area (shown on reject) */}
       {showFeedback && (
         <div
-          className="rounded-2xl p-8 animate-fade-in"
+          className="p-8 animate-fade-in"
           style={{
-            background: 'rgba(28, 28, 30, 0.8)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#ffffff',
+            borderRadius: '16px',
+            border: '1px solid #e5e5e5',
           }}
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <MessageSquare className="w-4 h-4" style={{ color: '#86868b' }} />
-            <span className="text-sm font-medium" style={{ color: '#f5f5f7' }}>
+            <MessageSquare className="w-4 h-4" style={{ color: '#555555' }} />
+            <span className="text-sm font-medium" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#111111' }}>
               Feedback
             </span>
           </div>
@@ -124,19 +133,21 @@ export default function HumanApproval({ epicData, onApprove, loading }) {
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Explain what needs to change..."
-            className="w-full rounded-xl px-5 py-4 text-sm resize-none transition-all duration-200 focus:outline-none"
+            className="w-full px-5 py-4 text-sm resize-none transition-all duration-200 focus:outline-none"
             style={{
-              background: 'rgba(0, 0, 0, 0.4)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              color: '#f5f5f7',
-              caretColor: '#0071e3',
+              fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif",
+              borderRadius: '12px',
+              background: '#ffffff',
+              border: '1px solid #e5e5e5',
+              color: '#111111',
+              caretColor: '#c8ff00',
             }}
             onFocus={(e) => {
-              e.target.style.border = '1px solid rgba(0, 113, 227, 0.5)';
-              e.target.style.boxShadow = '0 0 0 3px rgba(0, 113, 227, 0.15)';
+              e.target.style.border = '1px solid #c8ff00';
+              e.target.style.boxShadow = '0 0 0 3px rgba(200, 255, 0, 0.25)';
             }}
             onBlur={(e) => {
-              e.target.style.border = '1px solid rgba(255, 255, 255, 0.08)';
+              e.target.style.border = '1px solid #e5e5e5';
               e.target.style.boxShadow = 'none';
             }}
             disabled={loading}
@@ -149,21 +160,23 @@ export default function HumanApproval({ epicData, onApprove, loading }) {
         <button
           onClick={handleReject}
           disabled={loading || (showFeedback && !feedback.trim())}
-          className="inline-flex items-center gap-2 px-7 py-3 font-medium rounded-full transition-all duration-200 disabled:opacity-40"
+          className="inline-flex items-center gap-2 px-7 py-3 font-medium transition-all duration-200 disabled:opacity-40"
           style={{
+            fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif",
+            borderRadius: '9999px',
             background: 'transparent',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            color: '#f5f5f7',
+            border: '2px solid #111111',
+            color: '#111111',
           }}
           onMouseEnter={(e) => {
             if (!e.currentTarget.disabled) {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.background = '#111111';
+              e.currentTarget.style.color = '#ffffff';
             }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
             e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = '#111111';
           }}
         >
           {loading && showFeedback ? (
@@ -181,16 +194,25 @@ export default function HumanApproval({ epicData, onApprove, loading }) {
         <button
           onClick={handleApprove}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-7 py-3 text-white font-medium rounded-full transition-all duration-200 disabled:opacity-40"
+          className="inline-flex items-center gap-2 px-7 py-3 font-bold transition-all duration-200 disabled:opacity-40"
           style={{
-            background: loading ? '#333' : '#30d158',
-            color: loading ? '#666' : '#ffffff',
+            fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif",
+            borderRadius: '9999px',
+            background: loading ? '#e5e5e5' : '#c8ff00',
+            color: '#111111',
+            fontWeight: 700,
           }}
           onMouseEnter={(e) => {
-            if (!loading) e.currentTarget.style.background = '#34d65c';
+            if (!loading) {
+              e.currentTarget.style.background = '#b8ee00';
+              e.currentTarget.style.boxShadow = '0 4px 14px rgba(200, 255, 0, 0.4)';
+            }
           }}
           onMouseLeave={(e) => {
-            if (!loading) e.currentTarget.style.background = '#30d158';
+            if (!loading) {
+              e.currentTarget.style.background = '#c8ff00';
+              e.currentTarget.style.boxShadow = 'none';
+            }
           }}
         >
           {loading && !showFeedback ? (
@@ -208,7 +230,7 @@ export default function HumanApproval({ epicData, onApprove, loading }) {
       </div>
 
       {/* Status hint */}
-      <p className="text-center text-xs" style={{ color: '#48484a' }}>
+      <p className="text-center text-sm" style={{ fontFamily: "'Aptos', 'Calibri', 'Inter', system-ui, sans-serif", color: '#555555' }}>
         Approving will proceed to DAG visualization and task assignment
       </p>
     </div>
